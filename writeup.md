@@ -78,32 +78,25 @@ these function do this job:
 The code for my perspective transform includes a function called `apply_perspective_transform`, which appears 13rd code cell of the IPython notebook. The `apply_perspective_transform` function takes as inputs an image (`img`), I chose the hardcode the source and destination points in the following manner:
 
 ```
-    img_size = np.shape(image)
-    ht_window = np.uint(img_size[0]/1.5)
-    hb_window = np.uint(img_size[0])
-    c_window = np.uint(img_size[1]/2)
-    ctl_window = c_window - .2*np.uint(img_size[1]/2)
-    ctr_window = c_window + .2*np.uint(img_size[1]/2)
-    cbl_window = c_window - .9*np.uint(img_size[1]/2)
-    cbr_window = c_window + .9*np.uint(img_size[1]/2)
-    
-
-    src = np.float32([[cbl_window,hb_window],[cbr_window,hb_window],[ctr_window,ht_window],[ctl_window,ht_window]])
-
-    #print(src)
-    dst = np.float32([[0,img_size[0]],[img_size[1],img_size[0]],
-                      [img_size[1],0],[0,0]])
-    
-
+    src = np.float32(
+        [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
+        [((img_size[0] / 6) - 10), img_size[1]],
+        [(img_size[0] * 5 / 6) + 60, img_size[1]],
+        [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
+    dst = np.float32(
+        [[(img_size[0] / 4), 0],
+        [(img_size[0] / 4), img_size[1]],
+        [(img_size[0] * 3 / 4), img_size[1]],
+        [(img_size[0] * 3 / 4), 0]])
 ```
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 64.   720.      |0.   720.    | 
-| 1216.   720.  | 1280.   720.    |
-|  768.   480.    | 1280.     0.     |
-| 512.   480.     |0.     0.     |
+| 585.           460.     |320.    0.    | 
+| 203.33332825   720. | 320.  720.    |
+|   1126.66662598   720.    | 960.  720.     |
+| 695.           460.  |960.    0.  |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
@@ -216,6 +209,5 @@ Here's a [link to my video result](./project_video_output.mp4)
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-my pipeline is in the `process_image` function, at some point in the video, it not robust, i think maybe the lanes went outside the region of interest,
-and the speed of `process_image` may improve, the left_fit and right_fix can use previous value for current frame sometimes
+my pipeline is in the `process_image` function, if line not fit well enough at the bird view, then pipeline will fail, so i think the src and dst point for perspective transform must choose good points, and the edges of line must clean after color and sobel transform, if previous fit and current fit is very different, then use previous fit should be good, current maybe wrong fit, and diag view is a good tool for improve robust
 
